@@ -1,11 +1,13 @@
 import requests
 from pprint import pprint
 
+access_token = '30deb38527ac08fd3430a3872dc8523b2c0bf26390f1839399f5cbb668872ccc613d3916a2d8a7248235b'
+
 
 class User:
     def __init__(self, access_token, user_id):
         self.access_token = access_token
-        self.user_id = user_id
+        self.user_id = str(user_id)
         self.url = f'https://vk.com/id{self.user_id}'
 
     def get_params(self):
@@ -39,6 +41,22 @@ class User:
         URL = 'https://api.vk.com/method/friends.getMutual'
         friends = requests.get(URL, params=params)
         return friends.json()
+
+    def __str__(self):
+        url = str(self.url)
+        return url
+
+    def create(self, friends):
+        user_list = []
+        for i in friends:
+            users = User(self.access_token, i)
+            user_list.append(users)
+        return user_list
+
+    def __and__(self, User):
+        friends = self.mutual_friends_vk(User)
+        friends_list = self.create(friends['response'])
+        return friends_list
 
 
 def interface():
@@ -74,6 +92,11 @@ def interface():
         print('Вы ввели неверную команду ')
 
 
-access_token = 'dcfa5620d11f33e0aa41220939ce3ffbb9a8aa1c61b0588bc9817bed770b997427ad20ed0823fe7985477'
-
-interface()
+# interface()
+user = User(access_token, 456951815)
+user2 = User(access_token, 15804819)
+friends_list = user&user2
+print(user)
+print(friends_list)
+for i in friends_list:
+    print(i)
